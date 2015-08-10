@@ -1,0 +1,94 @@
+Option Explicit
+
+Sub loadData()
+  Dim con As New ADODB.Connection
+  Dim rs As New ADODB.Recordset
+  
+  con.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=H:\Workspace\VBA\customer.accdb;"
+  
+  con.Open
+  
+  
+  
+  Set rs.ActiveConnection = con
+  rs.Open "select * from customer"
+  Dim startRow As Integer
+  startRow = 1
+  Do Until rs.EOF
+    Cells(startRow, 1) = rs.Fields(0).Value
+    Cells(startRow, 2) = rs.Fields(1).Value
+    Cells(startRow, 3) = rs.Fields(2).Value
+    rs.MoveNext
+    startRow = startRow + 1
+  Loop
+  
+  rs.Close
+  
+  Set rs = Nothing
+  
+  
+  con.Close
+  Set con = Nothing
+  
+  
+  
+      
+End Sub
+
+
+Sub connectToDB(commandText As String)
+
+    Dim CutomerConn As ADODB.Connection
+    Dim CustomerCmd As ADODB.Command
+    
+    Set CutomerConn = New ADODB.Connection
+    Set CustomerCmd = New ADODB.Command
+    
+    CutomerConn.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=H:\Workspace\VBA\customer.accdb;"
+    CutomerConn.Open
+    
+    CustomerCmd.ActiveConnection = CutomerConn
+    CustomerCmd.commandText = commandText
+    CustomerCmd.Execute
+    
+    
+    CutomerConn.Close
+    Set CutomerConn = Nothing
+    
+End Sub
+
+Sub InsertCustomer()
+    Dim insertCommandText As String
+    connectToDB (GetInsertText)
+End Sub
+
+Sub updateData()
+    Dim updateText As String
+    Dim i As Integer
+    For i = 1 To 5
+        Dim name As String
+        name = Cells(i, 2)
+        Dim address As String
+        address = Cells(i, 3)
+        updateText = "UPDATE customer set Name = '" & name & "', Address = '" & address & "' WHERE ID = " & i & ""
+        connectToDB (updateText)
+    Next i
+    
+    
+    
+End Sub
+
+
+
+Function GetInsertText() As String
+    Dim SqlStr As String
+    SqlStr = "INSERT INTO customer(Name, Address) VALUES('Hoan', 15)"
+    GetInsertText = SqlStr
+End Function
+
+Function GetUpdateText() As String
+    GetUpdateText = ""
+End Function
+
+
+
